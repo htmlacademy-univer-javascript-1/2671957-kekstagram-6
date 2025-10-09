@@ -1,19 +1,18 @@
-/* eslint-disable no-unused-vars */
+// Проверка, помещается ли встреча в рабочие часы
+function isMeetingWithinWorkday(workStart, workEnd, meetingStart, durationMinutes) {
+  // Перевод "часы:минуты" -> минуты с начала суток
+  const toMinutes = (timeString) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
 
-function checkStringLength(str, maxLength) {
-  return str.length <= maxLength;
+  const workStartMins = toMinutes(workStart);
+  const workEndMins = toMinutes(workEnd);
+  const meetingStartMins = toMinutes(meetingStart);
+  const meetingEndMins = meetingStartMins + durationMinutes;
+
+  return meetingStartMins >= workStartMins && meetingEndMins <= workEndMins;
 }
 
-function isPalindrome(str) {
-  const normalized = str.toLowerCase().replaceAll(' ', '');
-  const reversed = normalized.split('').reverse().join('');
-  return normalized === reversed;
-}
-
-function extractNumber(input) {
-  const str = String(input);
-  const digits = str.match(/\d/g);
-  return digits ? Number(digits.join('')) : NaN;
-}
-
-/* eslint-enable no-unused-vars */
+// eslint-disable-next-line no-console
+console.log(isMeetingWithinWorkday('08:00', '17:30', '14:00', 90)); // должно вывести true

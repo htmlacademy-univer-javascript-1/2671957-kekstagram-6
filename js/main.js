@@ -4,6 +4,8 @@ import { generateMockPhotos } from './data.js';
 import { renderPictures } from './render.js';
 // Импорт функции открытия полноразмерного фото
 import { openBigPicture } from './big-picture.js';
+// Импорт логики формы загрузки и валидации
+import './form.js';
 
 // Генерация массива из 25 объектов (фотографий)
 const photos = generateMockPhotos();

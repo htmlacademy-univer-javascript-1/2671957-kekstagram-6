@@ -17,3 +17,6 @@ export const createIdGenerator = (start = 1) => {
     return current;
   };
 };
+
+// Проверка нажатия клавиши Esc
+export const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';

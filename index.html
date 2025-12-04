@@ -3,8 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- noUiSlider стили через CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
+
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <title>Кекстаграм</title>
 </head>
@@ -59,7 +64,7 @@
                   <!-- Изменение размера изображения -->
                   <fieldset class="img-upload__scale scale">
                     <button type="button" class="scale__control scale__control--smaller">Уменьшить</button>
-                    <input type="text" class="scale__control scale__control--value" value="100%" title="Image Scale" name="scale" readonly>
+                    <input type="text" class="scale__control scale__control--value" value="100%" name="scale" readonly>
                     <button type="button" class="scale__control scale__control--bigger">Увеличить</button>
                   </fieldset>
 
@@ -68,13 +73,13 @@
                     <img src="img/upload-default-image.jpg" alt="Предварительный просмотр фотографии">
                   </div>
 
-                  <!-- Изменение глубины эффекта -->
+                  <!-- Слайдер эффектов -->
                   <fieldset class="img-upload__effect-level effect-level">
-                    <input class="effect-level__value" type="number" step="any" name="effect-level" value="">
+                    <input class="effect-level__value" type="number" name="effect-level" step="any" value="">
                     <div class="effect-level__slider"></div>
                   </fieldset>
 
-                  <!-- Кнопка закрытия формы -->
+                  <!-- Кнопка закрытия -->
                   <button type="reset" class="img-upload__cancel cancel" id="upload-cancel">Закрыть</button>
                 </div>
 
@@ -126,7 +131,7 @@
                   </ul>
                 </fieldset>
 
-                <!-- ХЭШТЕГИ и КОММЕНТАРИИ -->
+                <!-- ХЭШТЕГИ / КОММЕНТЫ -->
                 <fieldset class="img-upload__text text">
                   <div class="img-upload__field-wrapper">
                     <input class="text__hashtags" name="hashtags" placeholder="#ХэшТег">
@@ -136,112 +141,24 @@
                   </div>
                 </fieldset>
 
-                <!-- КНОПКА ОТПРАВКИ -->
                 <button type="submit" class="img-upload__submit" id="upload-submit">Опубликовать</button>
               </div>
             </div>
           </form>
         </div>
       </section>
-
-      <!-- Здесь будут изображения других пользователей -->
-    </section>
-
-    <!-- Полноэкранный показ изображения -->
-    <section class="big-picture overlay hidden">
-      <h2 class="big-picture__title visually-hidden">Просмотр фотографии</h2>
-      <div class="big-picture__preview">
-        <div class="big-picture__img">
-          <img src="img/logo-background-3.jpg" alt="Девушка в купальнике" width="600" height="600">
-        </div>
-
-        <div class="big-picture__social social">
-          <div class="social__header">
-            <img class="social__picture" src="img/avatar-1.svg" alt="Аватар автора фотографии" width="35" height="35">
-            <p class="social__caption">Тестим новую камеру! =)</p>
-            <p class="social__likes">Нравится <span class="likes-count">356</span></p>
-          </div>
-
-          <div class="social__comment-count">5 из <span class="comments-count">125</span> комментариев</div>
-          <ul class="social__comments">
-            <li class="social__comment">
-              <img class="social__picture" src="img/avatar-4.svg" alt="Аватар комментатора" width="35" height="35">
-              <p class="social__text">Мега фото! Просто обалдеть!</p>
-            </li>
-            <li class="social__comment">
-              <img class="social__picture" src="img/avatar-3.svg" alt="Аватар комментатора" width="35" height="35">
-              <p class="social__text">Да это фотошоп!!!</p>
-            </li>
-          </ul>
-
-          <button type="button" class="social__comments-loader comments-loader">Загрузить ещё</button>
-
-          <div class="social__footer">
-            <img class="social__picture" src="img/avatar-6.svg" alt="Аватар комментатора" width="35" height="35">
-            <input type="text" class="social__footer-text" placeholder="Ваш комментарий...">
-            <button type="button" class="social__footer-btn" name="button">Отправить</button>
-          </div>
-        </div>
-
-        <button type="reset" class="big-picture__cancel cancel" id="picture-cancel">Закрыть</button>
-      </div>
     </section>
   </main>
 
-  <footer class="page-footer container">
-    <div class="page-footer__wrapper">
-      <div class="page-footer__copyright copyright">
-        <a class="copyright__link copyright__link--image" href="https://htmlacademy.ru/intensive/javascript">
-          <img src="img/htmla-logo.svg" width="130" height="45" alt="HTML Academy">
-        </a>
-        <p>Сделано в <a class="copyright__link copyright__link--text" href="https://htmlacademy.ru/intensive/javascript">HTML Academy</a></p>
-      </div>
-      <ul class="page-footer__contacts contacts">
-        <li><a href="https://twitter.com/htmlacademy_ru" class="contacts__link contacts__link--twitter">Twitter</a></li>
-        <li><a href="https://vk.com/htmlacademy" class="contacts__link contacts__link--vk">VK</a></li>
-      </ul>
-    </div>
-  </footer>
-
-  <!-- Шаблон изображения -->
-  <template id="picture">
-    <a href="#" class="picture">
-      <img class="picture__img" src="" width="182" height="182" alt="Случайная фотография">
-      <p class="picture__info">
-        <span class="picture__comments"></span>
-        <span class="picture__likes"></span>
-      </p>
-    </a>
-  </template>
-
-  <!-- Шаблон ошибки -->
-  <template id="error">
-    <section class="error">
-      <div class="error__inner">
-        <h2 class="error__title">Ошибка загрузки файла</h2>
-        <button type="button" class="error__button">Загрузить другой файл</button>
-      </div>
-    </section>
-  </template>
-
-  <!-- Шаблон успеха -->
-  <template id="success">
-    <section class="success">
-      <div class="success__inner">
-        <h2 class="success__title">Изображение успешно загружено</h2>
-        <button type="button" class="success__button">Круто!</button>
-      </div>
-    </section>
-  </template>
-
-  <!-- Сообщение загрузки -->
-  <template id="messages">
-    <div class="img-upload__message img-upload__message--loading">Загружаем...</div>
-  </template>
-
   <!-- Подключение библиотек и скриптов -->
   <script src="https://unpkg.com/pristinejs/dist/pristine.min.js"></script>
-  <script src="js/functions.js"></script>
+
+  <!-- noUiSlider CDN JS -->
+  <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+
+  <!-- подключение form.js -->
+  <script type="module" src="js/form.js"></script>
   <script type="module" src="js/main.js"></script>
+
 </body>
 </html>

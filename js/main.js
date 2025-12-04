@@ -1,16 +1,22 @@
-// Импорт функции генерации временных данных (моков)
-import { generateMockPhotos } from './data.js';
-// Импорт функции для отрисовки миниатюр
+import { getData } from './api.js';
 import { renderPictures } from './render.js';
-// Импорт функции открытия полноразмерного фото
-import { openBigPicture } from './big-picture.js';
-// Импорт логики формы загрузки и валидации
 import './form.js';
+import { showAlert } from './util.js';
 
-// Генерация массива из 25 объектов (фотографий)
-const photos = generateMockPhotos();
+const imgFiltersElement = document.querySelector('.img-filters');
 
-// Отрисовка миниатюр на странице + добавление обработки клика
-renderPictures(photos, openBigPicture);
+getData(
+  (photos) => {
+    // Отрисовываем миниатюры
+    renderPictures(photos);
 
-window.mockPhotos = photos;
+    // Показываем блок фильтров только после загрузки данных
+    if (imgFiltersElement) {
+      imgFiltersElement.classList.remove('img-filters--inactive');
+    }
+  },
+  () => {
+    // Сообщение об ошибке загрузки данных
+    showAlert('Не удалось загрузить данные. Попробуйте обновить страницу.');
+  },
+);

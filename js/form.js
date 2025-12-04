@@ -1,16 +1,19 @@
-// Импорт утилиты для проверки Escape
-import { isEscapeKey } from './util.js';
+// js/form.js
 
-// 9.13: поддерживаемые типы файлов для превью
+import { isEscapeKey } from './util.js';
+import { sendData } from './api.js';
+import { showSuccessMessage, showErrorMessage } from './messages.js';
+
+// поддерживаемые типы файлов для превью
 const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
-// 9.13: константы масштаба
+// константы масштаба
 const SCALE_STEP = 25;
 const SCALE_MIN = 25;
 const SCALE_MAX = 100;
 const SCALE_DEFAULT = 100;
 
-// 9.13: перечисление эффектов
+// перечисление эффектов
 const Effect = {
   NONE: 'none',
   CHROME: 'chrome',
@@ -20,73 +23,73 @@ const Effect = {
   HEAT: 'heat',
 };
 
-// 9.13: константа максимальной длины комментария
+// максимальная длина комментария
 const COMMENT_MAX_LENGTH = 140;
 
 // --- базовые элементы формы ---
-const form = document.querySelector('.img-upload__form');
-const fileInput = form.querySelector('#upload-file');
-const overlay = form.querySelector('.img-upload__overlay');
-const cancelButton = form.querySelector('#upload-cancel');
-const body = document.body;
+const formElement = document.querySelector('.img-upload__form');
+const fileInputElement = formElement.querySelector('#upload-file');
+const overlayElement = formElement.querySelector('.img-upload__overlay');
+const cancelButtonElement = formElement.querySelector('#upload-cancel');
+const bodyElement = document.body;
 
-const hashtagInput = form.querySelector('.text__hashtags');
-const descriptionInput = form.querySelector('.text__description');
+const hashtagInputElement = formElement.querySelector('.text__hashtags');
+const descriptionInputElement = formElement.querySelector('.text__description');
 
-// 9.13: элементы масштаба
-const scaleSmallerButtonElement = form.querySelector('.scale__control--smaller');
-const scaleBiggerButtonElement = form.querySelector('.scale__control--bigger');
-const scaleControlValueElement = form.querySelector('.scale__control--value');
+// элементы масштаба
+const scaleSmallerButtonElement = formElement.querySelector('.scale__control--smaller');
+const scaleBiggerButtonElement = formElement.querySelector('.scale__control--bigger');
+const scaleControlValueElement = formElement.querySelector('.scale__control--value');
 
-// 9.13: превью изображения и мини-превью эффектов
-const imagePreviewElement = form.querySelector('.img-upload__preview img');
-const effectPreviewElements = form.querySelectorAll('.effects__preview');
+// превью изображения и мини-превью эффектов
+const imagePreviewElement = formElement.querySelector('.img-upload__preview img');
+const effectPreviewElements = formElement.querySelectorAll('.effects__preview');
 
-// 9.13: элементы для эффектов и слайдера
-const effectsListElement = form.querySelector('.effects__list');
-const effectLevelContainerElement = form.querySelector('.img-upload__effect-level');
+// элементы для эффектов и слайдера
+const effectsListElement = formElement.querySelector('.effects__list');
+const effectLevelContainerElement = formElement.querySelector('.img-upload__effect-level');
 const effectLevelSliderElement = effectLevelContainerElement.querySelector('.effect-level__slider');
 const effectLevelValueElement = effectLevelContainerElement.querySelector('.effect-level__value');
 
+// кнопка отправки
+const submitButtonElement = formElement.querySelector('#upload-submit');
+
 // Pristine
-const pristine = new Pristine(form, {
+const pristine = new Pristine(formElement, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextClass: 'img-upload__error',
 });
 
-// 9.13: превью загруженного изображения
+// === ПРЕВЬЮ ЗАГРУЖЕННОГО ИЗОБРАЖЕНИЯ ===
 
 const updateImagePreview = () => {
-  const file = fileInput.files[0];
+  const file = fileInputElement.files[0];
 
   if (!file) {
     return;
   }
 
   const fileName = file.name.toLowerCase();
-  const matches = FILE_TYPES.some((ext) => fileName.endsWith(ext));
+  const matches = FILE_TYPES.some((extension) => fileName.endsWith(extension));
 
   if (!matches) {
-    // Формат файла не поддерживается - просто не меняем превью
     return;
   }
 
   const imageUrl = URL.createObjectURL(file);
 
-  // Обновляем основное превью
   imagePreviewElement.src = imageUrl;
 
-  // Обновляем мини-превью в списке эффектов
   effectPreviewElements.forEach((previewElement) => {
     previewElement.style.backgroundImage = `url('${imageUrl}')`;
   });
 };
 
-// 9.13: масштабирование изображения
+// === МАСШТАБ ===
 
 const getScaleValue = () => {
-  const valueWithPercent = scaleControlValueElement.value; // например "75%"
+  const valueWithPercent = scaleControlValueElement.value;
   const numericValue = parseInt(valueWithPercent, 10);
   return Number.isNaN(numericValue) ? SCALE_DEFAULT : numericValue;
 };
@@ -113,7 +116,7 @@ const onScaleBiggerButtonClick = () => {
   applyScale(currentValue + SCALE_STEP);
 };
 
-// 9.13: эффекты и настройки слайдера
+// === ЭФФЕКТЫ ===
 
 const EffectSliderOptions = {
   [Effect.CHROME]: {
@@ -189,7 +192,6 @@ const applyEffect = (effect, value) => {
 };
 
 const createEffectSlider = () => {
-  // Создаем слайдер один раз при инициализации модуля
   noUiSlider.create(effectLevelSliderElement, {
     range: {
       min: 0,
@@ -236,7 +238,6 @@ const setEffect = (effect) => {
   currentEffect = effect;
 
   if (currentEffect === Effect.NONE) {
-    // Оригинал: скрываем слайдер и снимаем фильтр
     effectLevelContainerElement.classList.add('hidden');
     imagePreviewElement.style.filter = 'none';
     effectLevelValueElement.value = '';
@@ -273,7 +274,6 @@ const onEffectsListChange = (evt) => {
 const resetEffects = () => {
   setEffect(Effect.NONE);
 
-  // Возвращаем слайдер в дефолтную конфигурацию
   effectLevelSliderElement.noUiSlider.updateOptions({
     range: {
       min: 0,
@@ -286,40 +286,39 @@ const resetEffects = () => {
   effectLevelValueElement.value = '';
 };
 
-// ОТКРЫТИЕ / ЗАКРЫТИЕ ФОРМЫ
+// === ОТКРЫТИЕ / ЗАКРЫТИЕ ФОРМЫ ===
 
-// 9.13: добавил сброс масштаба и эффектов при открытии
 const openForm = () => {
-  overlay.classList.remove('hidden');
-  body.classList.add('modal-open');
+  overlayElement.classList.remove('hidden');
+  bodyElement.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
   resetScale();
   resetEffects();
 };
 
-// 9.13: сбрасываем форму, масштаб, эффекты и input файла
 const closeForm = () => {
-  overlay.classList.add('hidden');
-  body.classList.remove('modal-open');
+  overlayElement.classList.add('hidden');
+  bodyElement.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown);
-  form.reset();
+  formElement.reset();
   pristine.reset();
-  fileInput.value = '';
+  fileInputElement.value = '';
   resetScale();
   resetEffects();
 };
 
-// обработка Esc
 function onDocumentKeydown(evt) {
-  if (isEscapeKey(evt) && !evt.target.closest('.text__hashtags') && !evt.target.closest('.text__description')) {
+  if (isEscapeKey(evt) &&
+    !evt.target.closest('.text__hashtags') &&
+    !evt.target.closest('.text__description')) {
     evt.preventDefault();
     closeForm();
   }
 }
 
-// блокируем Esc внутри полей
-[hashtagInput, descriptionInput].forEach((input) => {
-  input.addEventListener('keydown', (evt) => {
+// блокируем Esc внутри полей ввода
+[hashtagInputElement, descriptionInputElement].forEach((inputElement) => {
+  inputElement.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
       evt.stopPropagation();
     }
@@ -327,9 +326,8 @@ function onDocumentKeydown(evt) {
 });
 
 // загрузка файла
-// 9.13: добавил updateImagePreview()
-fileInput.addEventListener('change', () => {
-  if (!fileInput.files || fileInput.files.length === 0) {
+fileInputElement.addEventListener('change', () => {
+  if (!fileInputElement.files || fileInputElement.files.length === 0) {
     return;
   }
 
@@ -338,14 +336,14 @@ fileInput.addEventListener('change', () => {
 });
 
 // кнопка "Закрыть"
-cancelButton.addEventListener('click', (evt) => {
+cancelButtonElement.addEventListener('click', (evt) => {
   evt.preventDefault();
   closeForm();
 });
 
-// ВАЛИДАЦИЯ ХЭШТЕГОВ И КОММЕНТАРИЯ
+// === ВАЛИДАЦИЯ ХЭШТЕГОВ И КОММЕНТАРИЯ ===
 
-function validateHashtags(value) {
+const validateHashtags = (value) => {
   if (!value) {
     return true;
   }
@@ -363,37 +361,64 @@ function validateHashtags(value) {
   const lowerCaseTags = hashtags.map((tag) => tag.toLowerCase());
   const uniqueTags = new Set(lowerCaseTags);
 
-  return hashtags.every((tag) => hashtagPattern.test(tag)) && uniqueTags.size === hashtags.length;
-}
+  return hashtags.every((tag) => hashtagPattern.test(tag)) &&
+    uniqueTags.size === hashtags.length;
+};
 
 pristine.addValidator(
-  hashtagInput,
+  hashtagInputElement,
   validateHashtags,
   'Неверный формат тегов. Не более 5, без спецсимволов, не повторяются.',
 );
 
-function validateDescription(value) {
-  return value.length <= COMMENT_MAX_LENGTH;
-}
+const validateDescription = (value) => value.length <= COMMENT_MAX_LENGTH;
 
 pristine.addValidator(
-  descriptionInput,
+  descriptionInputElement,
   validateDescription,
   `Комментарий не должен превышать ${COMMENT_MAX_LENGTH} символов.`,
 );
 
-// отправка формы
-form.addEventListener('submit', (evt) => {
+// === БЛОКИРОВКА КНОПКИ ОТПРАВКИ ===
+
+const setSubmitButtonState = (isDisabled) => {
+  submitButtonElement.disabled = isDisabled;
+  submitButtonElement.textContent = isDisabled ? 'Публикую...' : 'Опубликовать';
+};
+
+// === ОТПРАВКА ФОРМЫ ЧЕРЕЗ FETCH ===
+
+formElement.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
   const isValid = pristine.validate();
+
   if (!isValid) {
-    evt.preventDefault();
+    return;
   }
+
+  setSubmitButtonState(true);
+
+  const formData = new FormData(formElement);
+
+  sendData(
+    () => {
+      setSubmitButtonState(false);
+      closeForm();
+      showSuccessMessage();
+    },
+    () => {
+      setSubmitButtonState(false);
+      showErrorMessage();
+    },
+    formData,
+  );
 });
 
-// 9.13: инициализация слайдера и навешивание обработчиков масштаба/эффектов
+// инициализация слайдера и обработчиков
 
 createEffectSlider();
-effectLevelContainerElement.classList.add('hidden'); // по умолчанию слайдер скрыт
+effectLevelContainerElement.classList.add('hidden');
 resetScale();
 
 scaleSmallerButtonElement.addEventListener('click', onScaleSmallerButtonClick);

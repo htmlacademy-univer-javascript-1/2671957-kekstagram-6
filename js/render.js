@@ -1,5 +1,3 @@
-import { openBigPicture } from './big-picture.js';
-
 const picturesContainer = document.querySelector('.pictures');
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
@@ -28,4 +26,3 @@ export const renderPictures = (photos) => {
 
   picturesContainer.append(fragment);
 };
-

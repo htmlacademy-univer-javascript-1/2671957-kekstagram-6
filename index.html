@@ -31,6 +31,17 @@
     <section class="pictures container">
       <h2 class="pictures__title visually-hidden">Фотографии других пользователей</h2>
 
+      <!-- ШАБЛОН МИНИАТЮРЫ -->
+      <template id="picture">
+        <a class="picture" href="#">
+          <img class="picture__img" src="" alt="Фотография пользователя">
+          <p class="picture__info">
+            <span class="picture__comments">0</span>
+            <span class="picture__likes">0</span>
+          </p>
+        </a>
+      </template>
+
       <!-- Поле для загрузки нового изображения на сайт -->
       <section class="img-upload">
         <div class="img-upload__wrapper">
@@ -64,7 +75,12 @@
                   <!-- Изменение размера изображения -->
                   <fieldset class="img-upload__scale scale">
                     <button type="button" class="scale__control scale__control--smaller">Уменьшить</button>
-                    <input type="text" class="scale__control scale__control--value" value="100%" name="scale" readonly>
+                    <input
+                      type="text"
+                      class="scale__control scale__control--value"
+                      value="100%"
+                      name="scale"
+                      readonly>
                     <button type="button" class="scale__control scale__control--bigger">Увеличить</button>
                   </fieldset>
 
@@ -87,42 +103,73 @@
                 <fieldset class="img-upload__effects effects">
                   <ul class="effects__list">
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio visually-hidden" name="effect" id="effect-none" value="none" checked>
+                      <input
+                        type="radio"
+                        class="effects__radio visually-hidden"
+                        name="effect"
+                        id="effect-none"
+                        value="none"
+                        checked>
                       <label for="effect-none" class="effects__label">
                         <span class="effects__preview effects__preview--none"></span>
                         Оригинал
                       </label>
                     </li>
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio visually-hidden" name="effect" id="effect-chrome" value="chrome">
+                      <input
+                        type="radio"
+                        class="effects__radio visually-hidden"
+                        name="effect"
+                        id="effect-chrome"
+                        value="chrome">
                       <label for="effect-chrome" class="effects__label">
                         <span class="effects__preview effects__preview--chrome"></span>
                         Хром
                       </label>
                     </li>
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio visually-hidden" name="effect" id="effect-sepia" value="sepia">
+                      <input
+                        type="radio"
+                        class="effects__radio visually-hidden"
+                        name="effect"
+                        id="effect-sepia"
+                        value="sepia">
                       <label for="effect-sepia" class="effects__label">
                         <span class="effects__preview effects__preview--sepia"></span>
                         Сепия
                       </label>
                     </li>
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio visually-hidden" name="effect" id="effect-marvin" value="marvin">
+                      <input
+                        type="radio"
+                        class="effects__radio visually-hidden"
+                        name="effect"
+                        id="effect-marvin"
+                        value="marvin">
                       <label for="effect-marvin" class="effects__label">
                         <span class="effects__preview effects__preview--marvin"></span>
                         Марвин
                       </label>
                     </li>
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio visually-hidden" name="effect" id="effect-phobos" value="phobos">
+                      <input
+                        type="radio"
+                        class="effects__radio visually-hidden"
+                        name="effect"
+                        id="effect-phobos"
+                        value="phobos">
                       <label for="effect-phobos" class="effects__label">
                         <span class="effects__preview effects__preview--phobos"></span>
                         Фобос
                       </label>
                     </li>
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio visually-hidden" name="effect" id="effect-heat" value="heat">
+                      <input
+                        type="radio"
+                        class="effects__radio visually-hidden"
+                        name="effect"
+                        id="effect-heat"
+                        value="heat">
                       <label for="effect-heat" class="effects__label">
                         <span class="effects__preview effects__preview--heat"></span>
                         Зной
@@ -150,15 +197,83 @@
     </section>
   </main>
 
+  <!-- Окно полноэкранного просмотра изображения -->
+  <section class="big-picture overlay hidden">
+    <div class="big-picture__preview">
+      <div class="big-picture__img">
+        <img src="img/upload-default-image.jpg" alt="Просмотр фотографии">
+      </div>
+
+      <div class="social">
+        <div class="social__header">
+          <img
+            class="social__picture"
+            src="img/avatar-1.svg"
+            alt="Аватар автора фотографии"
+            width="35"
+            height="35">
+          <p class="social__caption">Описание фотографии</p>
+          <p class="social__likes">
+            Нравится <span class="likes-count">0</span>
+          </p>
+        </div>
+
+        <ul class="social__comments">
+          <!-- Комментарии будут добавляться сюда скриптом -->
+        </ul>
+
+        <p class="social__comment-count">
+          <span class="comments-count">0</span> из <span class="comments-total">0</span> комментариев
+        </p>
+
+        <button class="social__comments-loader comments-loader" type="button">Загрузить ещё</button>
+
+        <div class="social__footer">
+          <img
+            class="social__footer-commentor"
+            src="img/avatar-1.svg"
+            alt="Аватар комментатора"
+            width="35"
+            height="35">
+          <input
+            class="social__footer-text"
+            type="text"
+            name="comment"
+            placeholder="Ваш комментарий...">
+          <button class="social__footer-btn" type="button">Отправить</button>
+        </div>
+      </div>
+
+      <button class="big-picture__cancel cancel" id="picture-cancel" type="button">Закрыть</button>
+    </div>
+  </section>
+
+  <!-- Шаблон сообщения об успешной отправке -->
+  <template id="success">
+    <section class="success">
+      <div class="success__inner">
+        <h2 class="success__title">Изображение успешно загружено</h2>
+        <button type="button" class="success__button">Круто!</button>
+      </div>
+    </section>
+  </template>
+
+  <!-- Шаблон сообщения об ошибке отправки -->
+  <template id="error">
+    <section class="error">
+      <div class="error__inner">
+        <h2 class="error__title">Ошибка загрузки файла</h2>
+        <p class="error__text">Попробуйте ещё раз.</p>
+        <button type="button" class="error__button">Ок</button>
+      </div>
+    </section>
+  </template>
+
   <!-- Подключение библиотек и скриптов -->
   <script src="https://unpkg.com/pristinejs/dist/pristine.min.js"></script>
-
-  <!-- noUiSlider CDN JS -->
   <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 
-  <!-- подключение form.js -->
-  <script type="module" src="js/form.js"></script>
+  <!-- главный модуль (внутри него импортируются остальные js-файлы) -->
   <script type="module" src="js/main.js"></script>
-
 </body>
 </html>

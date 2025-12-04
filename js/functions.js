@@ -13,6 +13,3 @@ function isMeetingWithinWorkday(workStart, workEnd, meetingStart, durationMinute
 
   return meetingStartMins >= workStartMins && meetingEndMins <= workEndMins;
 }
-
-// eslint-disable
-console.log(isMeetingWithinWorkday('08:00', '17:30', '14:00', 90)); // должно вывести true

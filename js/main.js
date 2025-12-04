@@ -1,16 +1,22 @@
-// js/main.js
-
-import { renderPictures } from './render.js';
 import { getData } from './api.js';
-import { showAlert } from './util.js';
+import { renderPictures } from './render.js';
 import './form.js';
+import { showAlert } from './util.js';
 
-const onDataLoadSuccess = (photos) => {
-  renderPictures(photos);
-};
+const imgFiltersElement = document.querySelector('.img-filters');
 
-const onDataLoadFail = (message) => {
-  showAlert(message);
-};
+getData(
+  (photos) => {
+    // Отрисовываем миниатюры
+    renderPictures(photos);
 
-getData(onDataLoadSuccess, onDataLoadFail);
+    // Показываем блок фильтров только после загрузки данных
+    if (imgFiltersElement) {
+      imgFiltersElement.classList.remove('img-filters--inactive');
+    }
+  },
+  () => {
+    // Сообщение об ошибке загрузки данных
+    showAlert('Не удалось загрузить данные. Попробуйте обновить страницу.');
+  },
+);

@@ -1,20 +1,18 @@
-// js/util.js
-
 const ALERT_SHOW_TIME = 5000;
 
 // Возвращает случайное целое число из диапазона [min, max] включительно
-export const getRandomIntInclusive = (min, max) => {
+const getRandomIntInclusive = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(min, max));
   return Math.floor(Math.random() * (upper - lower + 1)) + lower;
 };
 
 // Возвращает случайный элемент из переданного массива
-export const getRandomArrayElement = (items) =>
+const getRandomArrayElement = (items) =>
   items[getRandomIntInclusive(0, items.length - 1)];
 
 // Генератор последовательных уникальных идентификаторов
-export const createIdGenerator = (start = 1) => {
+const createIdGenerator = (start = 1) => {
   let current = start - 1;
   return () => {
     current += 1;
@@ -23,10 +21,10 @@ export const createIdGenerator = (start = 1) => {
 };
 
 // Проверка нажатия клавиши Esc
-export const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 // Показ простого алерта об ошибке загрузки данных (ТЗ 4.2)
-export const showAlert = (message) => {
+const showAlert = (message) => {
   const alertElement = document.createElement('div');
   alertElement.style.position = 'fixed';
   alertElement.style.left = '0';
@@ -46,4 +44,37 @@ export const showAlert = (message) => {
   setTimeout(() => {
     alertElement.remove();
   }, ALERT_SHOW_TIME);
+};
+
+// Функция устранения дребезга
+const debounce = (callback, timeoutDelay = 500) => {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
+
+// Функция пропуска кадров
+const throttle = (callback, delayBetweenFrames) => {
+  let lastTime = 0;
+
+  return (...rest) => {
+    const now = new Date();
+    if (now - lastTime >= delayBetweenFrames) {
+      callback.apply(this, rest);
+      lastTime = now;
+    }
+  };
+};
+
+export {
+  getRandomIntInclusive,
+  getRandomArrayElement,
+  createIdGenerator,
+  isEscapeKey,
+  showAlert,
+  debounce,
+  throttle
 };

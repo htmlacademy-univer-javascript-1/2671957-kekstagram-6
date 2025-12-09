@@ -100,12 +100,16 @@ export function openBigPicture(photo) {
     likes = 0,
     comments = [],
     filter = 'none',
+    scale = 1,
   } = photo;
 
   modalImg.src = url;
   modalImg.alt = description;
-  // применяем тот же фильтр, что и у миниатюры/превью
+
+  // фильтр и масштаб для большой картинки
   modalImg.style.filter = filter || 'none';
+  modalImg.style.transform = `scale(${scale})`;
+  modalImg.style.transformOrigin = 'center center';
 
   likesCount.textContent = String(likes);
   caption.textContent = description;

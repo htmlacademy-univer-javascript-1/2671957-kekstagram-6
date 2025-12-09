@@ -100,6 +100,7 @@ const applyScale = (value) => {
 
   const scaleFactor = clampedValue / 100;
   imagePreviewElement.style.transform = `scale(${scaleFactor})`;
+  imagePreviewElement.style.transformOrigin = 'center center';
 };
 
 const resetScale = () => {
@@ -403,15 +404,19 @@ formElement.addEventListener('submit', (evt) => {
 
   sendData(
     () => {
-      // уведомляем галерею о новом фото
       if (currentImageUrl) {
+        // текущий масштаб из инпута (в процентах)
+        const scalePercent = getScaleValue(); // 25, 50, 75, 100
+        const scaleFactor = scalePercent / 100; // 0.25–1
+
         const uploadedPhoto = {
           url: currentImageUrl,
           description: descriptionInputElement.value.trim(),
           likes: 0,
           comments: [],
-          // передаём текущий CSS-фильтр, применённый к превью
+          // фильтр и масштаб, применённые в форме
           filter: imagePreviewElement.style.filter || 'none',
+          scale: scaleFactor,
         };
 
         const uploadEvent = new CustomEvent('photo-upload-success', {

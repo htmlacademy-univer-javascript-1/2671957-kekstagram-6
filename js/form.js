@@ -1,5 +1,3 @@
-// js/form.js
-
 import { isEscapeKey } from './util.js';
 import { sendData } from './api.js';
 import { showSuccessMessage, showErrorMessage } from './messages.js';
@@ -26,7 +24,7 @@ const Effect = {
 // максимальная длина комментария
 const COMMENT_MAX_LENGTH = 140;
 
-// --- базовые элементы формы ---
+// базовые элементы формы
 const formElement = document.querySelector('.img-upload__form');
 const fileInputElement = formElement.querySelector('#upload-file');
 const overlayElement = formElement.querySelector('.img-upload__overlay');
@@ -63,6 +61,8 @@ const pristine = new Pristine(formElement, {
 
 // === ПРЕВЬЮ ЗАГРУЖЕННОГО ИЗОБРАЖЕНИЯ ===
 
+let currentImageUrl = '';
+
 const updateImagePreview = () => {
   const file = fileInputElement.files[0];
 
@@ -77,12 +77,12 @@ const updateImagePreview = () => {
     return;
   }
 
-  const imageUrl = URL.createObjectURL(file);
+  currentImageUrl = URL.createObjectURL(file);
 
-  imagePreviewElement.src = imageUrl;
+  imagePreviewElement.src = currentImageUrl;
 
   effectPreviewElements.forEach((previewElement) => {
-    previewElement.style.backgroundImage = `url('${imageUrl}')`;
+    previewElement.style.backgroundImage = `url('${currentImageUrl}')`;
   });
 };
 
@@ -403,6 +403,22 @@ formElement.addEventListener('submit', (evt) => {
 
   sendData(
     () => {
+      //  уведомляем галерею о новом фото
+      if (currentImageUrl) {
+        const uploadedPhoto = {
+          url: currentImageUrl,
+          description: descriptionInputElement.value.trim(),
+          likes: 0,
+          comments: [],
+        };
+
+        const uploadEvent = new CustomEvent('photo-upload-success', {
+          detail: uploadedPhoto,
+        });
+
+        document.dispatchEvent(uploadEvent);
+      }
+
       setSubmitButtonState(false);
       closeForm();
       showSuccessMessage();

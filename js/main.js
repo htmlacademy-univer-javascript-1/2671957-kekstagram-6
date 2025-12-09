@@ -102,6 +102,25 @@ const initFilters = () => {
   filtersFormElement.addEventListener('click', onFiltersFormClick);
 };
 
+// добавление нового фото после успешной загрузки
+
+const onPhotoUploadSuccess = (evt) => {
+  const newPhoto = evt.detail;
+
+  if (!newPhoto) {
+    return;
+  }
+
+  // новое фото в начало списка
+  originalPhotos = [newPhoto, ...originalPhotos];
+
+  // перерисовываем галерею с учётом текущего фильтра
+  debouncedRenderFilteredPhotos();
+};
+
+document.addEventListener('photo-upload-success', onPhotoUploadSuccess);
+
+// загрузка данных с сервера и старт приложения
 
 getData(
   (photos) => {

@@ -2,10 +2,10 @@ const body = document.body;
 const modal = document.querySelector('.big-picture');
 const modalImg = modal.querySelector('.big-picture__img img');
 const likesCount = modal.querySelector('.likes-count');
-const commentsCount = modal.querySelector('.comments-count'); // <span class="comments-count">
+const commentsCount = modal.querySelector('.comments-count');
 const caption = modal.querySelector('.social__caption');
 const commentsList = modal.querySelector('.social__comments');
-const commentCountBlock = modal.querySelector('.social__comment-count'); // "X из <span class='comments-count'>Y</span> комментариев"
+const commentCountBlock = modal.querySelector('.social__comment-count');
 const commentsLoader = modal.querySelector('.comments-loader');
 const closeBtn = modal.querySelector('#picture-cancel');
 
@@ -94,17 +94,29 @@ function closeBigPicture() {
 }
 
 export function openBigPicture(photo) {
-  const { url, description = '', likes = 0, comments = [] } = photo;
+  const {
+    url,
+    description = '',
+    likes = 0,
+    comments = [],
+    filter = 'none',
+    scale = 1,
+  } = photo;
 
   modalImg.src = url;
   modalImg.alt = description;
+
+  // фильтр и масштаб для большой картинки
+  modalImg.style.filter = filter || 'none';
+  modalImg.style.transform = `scale(${scale})`;
+  modalImg.style.transformOrigin = 'center center';
+
   likesCount.textContent = String(likes);
   caption.textContent = description;
 
   currentComments = Array.isArray(comments) ? comments : [];
   shownCount = 0;
   commentsList.innerHTML = '';
-
 
   commentCountBlock.classList.remove('hidden');
   commentsLoader.classList.remove('hidden');

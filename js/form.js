@@ -1,5 +1,3 @@
-// js/form.js
-
 import { isEscapeKey } from './util.js';
 import { sendData } from './api.js';
 import { showSuccessMessage, showErrorMessage } from './messages.js';
@@ -26,7 +24,7 @@ const Effect = {
 // максимальная длина комментария
 const COMMENT_MAX_LENGTH = 140;
 
-// --- базовые элементы формы ---
+// базовые элементы формы
 const formElement = document.querySelector('.img-upload__form');
 const fileInputElement = formElement.querySelector('#upload-file');
 const overlayElement = formElement.querySelector('.img-upload__overlay');
@@ -63,6 +61,8 @@ const pristine = new Pristine(formElement, {
 
 // === ПРЕВЬЮ ЗАГРУЖЕННОГО ИЗОБРАЖЕНИЯ ===
 
+let currentImageUrl = '';
+
 const updateImagePreview = () => {
   const file = fileInputElement.files[0];
 
@@ -77,12 +77,12 @@ const updateImagePreview = () => {
     return;
   }
 
-  const imageUrl = URL.createObjectURL(file);
+  currentImageUrl = URL.createObjectURL(file);
 
-  imagePreviewElement.src = imageUrl;
+  imagePreviewElement.src = currentImageUrl;
 
   effectPreviewElements.forEach((previewElement) => {
-    previewElement.style.backgroundImage = `url('${imageUrl}')`;
+    previewElement.style.backgroundImage = `url('${currentImageUrl}')`;
   });
 };
 
@@ -100,6 +100,7 @@ const applyScale = (value) => {
 
   const scaleFactor = clampedValue / 100;
   imagePreviewElement.style.transform = `scale(${scaleFactor})`;
+  imagePreviewElement.style.transformOrigin = 'center center';
 };
 
 const resetScale = () => {
@@ -403,6 +404,28 @@ formElement.addEventListener('submit', (evt) => {
 
   sendData(
     () => {
+      if (currentImageUrl) {
+        // текущий масштаб из инпута (в процентах)
+        const scalePercent = getScaleValue(); // 25, 50, 75, 100
+        const scaleFactor = scalePercent / 100; // 0.25–1
+
+        const uploadedPhoto = {
+          url: currentImageUrl,
+          description: descriptionInputElement.value.trim(),
+          likes: 0,
+          comments: [],
+          // фильтр и масштаб, применённые в форме
+          filter: imagePreviewElement.style.filter || 'none',
+          scale: scaleFactor,
+        };
+
+        const uploadEvent = new CustomEvent('photo-upload-success', {
+          detail: uploadedPhoto,
+        });
+
+        document.dispatchEvent(uploadEvent);
+      }
+
       setSubmitButtonState(false);
       closeForm();
       showSuccessMessage();

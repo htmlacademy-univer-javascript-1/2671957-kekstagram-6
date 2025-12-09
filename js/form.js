@@ -403,13 +403,15 @@ formElement.addEventListener('submit', (evt) => {
 
   sendData(
     () => {
-      //  уведомляем галерею о новом фото
+      // уведомляем галерею о новом фото
       if (currentImageUrl) {
         const uploadedPhoto = {
           url: currentImageUrl,
           description: descriptionInputElement.value.trim(),
           likes: 0,
           comments: [],
+          // передаём текущий CSS-фильтр, применённый к превью
+          filter: imagePreviewElement.style.filter || 'none',
         };
 
         const uploadEvent = new CustomEvent('photo-upload-success', {

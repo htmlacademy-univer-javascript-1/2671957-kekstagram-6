@@ -13,19 +13,23 @@ export const renderPictures = (photos) => {
 
   const fragment = document.createDocumentFragment();
 
-  photos.forEach(({ url, description, likes, comments }) => {
+  photos.forEach(({ url, description, likes, comments, filter }) => {
     const element = pictureTemplate.cloneNode(true);
     const imgElement = element.querySelector('.picture__img');
 
     imgElement.src = url;
     imgElement.alt = description;
 
+    // применяем фильтр к миниатюре, если он есть
+    imgElement.style.filter = filter || 'none';
+
     element.querySelector('.picture__likes').textContent = String(likes);
     element.querySelector('.picture__comments').textContent = String(comments.length);
 
     element.addEventListener('click', (evt) => {
       evt.preventDefault();
-      openBigPicture({ url, description, likes, comments });
+      // передаём фильтр дальше в полноэкранный просмотр
+      openBigPicture({ url, description, likes, comments, filter });
     });
 
     fragment.append(element);

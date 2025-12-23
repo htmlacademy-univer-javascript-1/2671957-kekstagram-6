@@ -201,6 +201,16 @@ const resetEffects = () => {
   effectLevelValueElement.value = '';
 };
 
+const onDocumentKeydown = (evt) => {
+  const isInTextField =
+    evt.target.closest('.text__hashtags') || evt.target.closest('.text__description');
+
+  if (isEscapeKey(evt) && !isInTextField) {
+    evt.preventDefault();
+    closeForm();
+  }
+};
+
 const closeForm = () => {
   overlayElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
@@ -221,15 +231,6 @@ const openForm = () => {
 
   resetScale();
   resetEffects();
-};
-
-const onDocumentKeydown = (evt) => {
-  const isInTextField = evt.target.closest('.text__hashtags') || evt.target.closest('.text__description');
-
-  if (isEscapeKey(evt) && !isInTextField) {
-    evt.preventDefault();
-    closeForm();
-  }
 };
 
 [hashtagInputElement, descriptionInputElement].forEach((inputElement) => {
@@ -272,13 +273,14 @@ const validateHashtags = (value) => {
   const lowerCaseTags = hashtags.map((tag) => tag.toLowerCase());
   const uniqueTags = new Set(lowerCaseTags);
 
-  return hashtags.every((tag) => hashtagPattern.test(tag)) && uniqueTags.size === hashtags.length;
+  return hashtags.every((tag) => hashtagPattern.test(tag)) &&
+    uniqueTags.size === hashtags.length;
 };
 
 pristine.addValidator(
   hashtagInputElement,
   validateHashtags,
-  'Неверный формат тегов. Не более 5, без спецсимволов, не повторяются.'
+  'Неверный формат тегов. Не более 5, без спецсимволов, не повторяются.',
 );
 
 const validateDescription = (value) => value.length <= COMMENT_MAX_LENGTH;
@@ -286,7 +288,7 @@ const validateDescription = (value) => value.length <= COMMENT_MAX_LENGTH;
 pristine.addValidator(
   descriptionInputElement,
   validateDescription,
-  `Комментарий не должен превышать ${COMMENT_MAX_LENGTH} символов.`
+  `Комментарий не должен превышать ${COMMENT_MAX_LENGTH} символов.`,
 );
 
 const setSubmitButtonState = (isDisabled) => {
@@ -334,11 +336,7 @@ const onFormSubmit = (evt) => {
 
   setSubmitButtonState(true);
 
-  sendData(
-    handleFormSuccess,
-    handleFormFail,
-    new FormData(formElement)
-  );
+  sendData(handleFormSuccess, handleFormFail, new FormData(formElement));
 };
 
 formElement.addEventListener('submit', onFormSubmit);

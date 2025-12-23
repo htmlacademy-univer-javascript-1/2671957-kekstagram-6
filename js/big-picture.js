@@ -73,12 +73,12 @@ const onCommentsLoaderClick = () => {
   renderNextPortion();
 };
 
-const onEscKeydown = (evt) => {
+function onEscKeydown(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeBigPicture();
   }
-};
+}
 
 const closeBigPicture = () => {
   modal.classList.add('hidden');

@@ -201,6 +201,16 @@ const resetEffects = () => {
   effectLevelValueElement.value = '';
 };
 
+function onDocumentKeydown(evt) {
+  const isInTextField =
+    evt.target.closest('.text__hashtags') || evt.target.closest('.text__description');
+
+  if (isEscapeKey(evt) && !isInTextField) {
+    evt.preventDefault();
+    closeForm();
+  }
+}
+
 const closeForm = () => {
   overlayElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
@@ -212,16 +222,6 @@ const closeForm = () => {
   fileInputElement.value = '';
   resetScale();
   resetEffects();
-};
-
-const onDocumentKeydown = (evt) => {
-  const isInTextField =
-    evt.target.closest('.text__hashtags') || evt.target.closest('.text__description');
-
-  if (isEscapeKey(evt) && !isInTextField) {
-    evt.preventDefault();
-    closeForm();
-  }
 };
 
 const openForm = () => {

@@ -1,24 +1,26 @@
+import { isEscapeKey } from './util.js';
+
+const AVATAR_SIZE = 35;
+const COMMENTS_STEP = 5;
+
 const body = document.body;
 const modal = document.querySelector('.big-picture');
 const modalImg = modal.querySelector('.big-picture__img img');
 const likesCount = modal.querySelector('.likes-count');
-const commentsCount = modal.querySelector('.comments-count');
 const caption = modal.querySelector('.social__caption');
+
 const commentsList = modal.querySelector('.social__comments');
 const commentCountBlock = modal.querySelector('.social__comment-count');
+const commentsShownElement = commentCountBlock.querySelector('.comments-count');
+const commentsTotalElement = commentCountBlock.querySelector('.comments-total');
+
 const commentsLoader = modal.querySelector('.comments-loader');
 const closeBtn = modal.querySelector('#picture-cancel');
-
-const COMMENTS_STEP = 5;
 
 let currentComments = [];
 let shownCount = 0;
 
-function isEsc(evt) {
-  return evt.key === 'Escape' || evt.key === 'Esc';
-}
-
-function renderComment({ avatar, name, message }) {
+const renderComment = ({ avatar, name, message }) => {
   const li = document.createElement('li');
   li.className = 'social__comment';
 
@@ -26,8 +28,8 @@ function renderComment({ avatar, name, message }) {
   img.className = 'social__picture';
   img.src = avatar;
   img.alt = name;
-  img.width = 35;
-  img.height = 35;
+  img.width = AVATAR_SIZE;
+  img.height = AVATAR_SIZE;
 
   const p = document.createElement('p');
   p.className = 'social__text';
@@ -35,18 +37,18 @@ function renderComment({ avatar, name, message }) {
 
   li.append(img, p);
   return li;
-}
+};
 
-function updateCounter() {
-  const total = currentComments.length;
-  const shown = Math.min(shownCount, total);
+const updateCounter = () => {
+  commentsShownElement.textContent = String(shownCount);
+  commentsTotalElement.textContent = String(currentComments.length);
+};
 
-  commentsCount.textContent = String(total);
+const toggleLoader = () => {
+  commentsLoader.classList.toggle('hidden', shownCount >= currentComments.length);
+};
 
-  commentCountBlock.innerHTML = `${shown} из <span class="comments-count">${total}</span> комментариев`;
-}
-
-function renderNextPortion() {
+const renderNextPortion = () => {
   const total = currentComments.length;
   const start = shownCount;
   const end = Math.min(shownCount + COMMENTS_STEP, total);
@@ -59,41 +61,43 @@ function renderNextPortion() {
   for (let i = start; i < end; i++) {
     fragment.append(renderComment(currentComments[i]));
   }
+
   commentsList.append(fragment);
-
   shownCount = end;
+
   updateCounter();
+  toggleLoader();
+};
 
-  if (shownCount >= total) {
-    commentsLoader.classList.add('hidden');
-  } else {
-    commentsLoader.classList.remove('hidden');
-  }
-}
-
-function onEscKeydown(evt) {
-  if (isEsc(evt)) {
-    evt.preventDefault();
-    closeBigPicture();
-  }
-}
-
-function onCommentsLoaderClick() {
+const onCommentsLoaderClick = () => {
   renderNextPortion();
-}
+};
 
-function closeBigPicture() {
+let onEscKeydown = null;
+
+const closeBigPicture = () => {
   modal.classList.add('hidden');
   body.classList.remove('modal-open');
 
   document.removeEventListener('keydown', onEscKeydown);
   commentsLoader.removeEventListener('click', onCommentsLoaderClick);
 
+  commentsList.innerHTML = '';
+  commentCountBlock.classList.add('hidden');
+  commentsLoader.classList.add('hidden');
+
   currentComments = [];
   shownCount = 0;
-}
+};
 
-export function openBigPicture(photo) {
+onEscKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closeBigPicture();
+  }
+};
+
+export const openBigPicture = (photo) => {
   const {
     url,
     description = '',
@@ -106,7 +110,6 @@ export function openBigPicture(photo) {
   modalImg.src = url;
   modalImg.alt = description;
 
-  // фильтр и масштаб для большой картинки
   modalImg.style.filter = filter || 'none';
   modalImg.style.transform = `scale(${scale})`;
   modalImg.style.transformOrigin = 'center center';
@@ -129,6 +132,6 @@ export function openBigPicture(photo) {
 
   document.addEventListener('keydown', onEscKeydown);
   commentsLoader.addEventListener('click', onCommentsLoaderClick);
-}
+};
 
 closeBtn.addEventListener('click', closeBigPicture);

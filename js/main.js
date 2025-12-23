@@ -18,8 +18,6 @@ const filtersFormElement = imgFiltersElement.querySelector('.img-filters__form')
 let originalPhotos = [];
 let currentFilterId = FilterId.DEFAULT;
 
-// функции для разных фильтров
-
 const getRandomPhotos = (photos) => {
   const photosCopy = photos.slice();
   const result = [];
@@ -27,17 +25,14 @@ const getRandomPhotos = (photos) => {
 
   for (let i = 0; i < count; i++) {
     const randomIndex = Math.floor(Math.random() * photosCopy.length);
-    const randomPhoto = photosCopy.splice(randomIndex, 1)[0];
-    result.push(randomPhoto);
+    result.push(photosCopy.splice(randomIndex, 1)[0]);
   }
 
   return result;
 };
 
 const getDiscussedPhotos = (photos) =>
-  photos
-    .slice()
-    .sort((first, second) => second.comments.length - first.comments.length);
+  photos.slice().sort((a, b) => b.comments.length - a.comments.length);
 
 const getFilteredPhotos = () => {
   switch (currentFilterId) {
@@ -51,30 +46,17 @@ const getFilteredPhotos = () => {
   }
 };
 
-// перерисовка с учётом фильтра
-
 const renderFilteredPhotos = () => {
-  const photos = getFilteredPhotos();
-  renderPictures(photos);
+  renderPictures(getFilteredPhotos());
 };
 
 const debouncedRenderFilteredPhotos = debounce(renderFilteredPhotos, RERENDER_DELAY);
 
-// управление активной кнопкой
-
 const setActiveFilterButton = (filterId) => {
-  const buttons = filtersFormElement.querySelectorAll('.img-filters__button');
-
-  buttons.forEach((button) => {
-    if (button.id === filterId) {
-      button.classList.add('img-filters__button--active');
-    } else {
-      button.classList.remove('img-filters__button--active');
-    }
+  filtersFormElement.querySelectorAll('.img-filters__button').forEach((button) => {
+    button.classList.toggle('img-filters__button--active', button.id === filterId);
   });
 };
-
-// обработчик кликов по фильтрам
 
 const onFiltersFormClick = (evt) => {
   const target = evt.target;
@@ -94,45 +76,31 @@ const onFiltersFormClick = (evt) => {
   debouncedRenderFilteredPhotos();
 };
 
-// инициализация фильтров
-
 const initFilters = () => {
   imgFiltersElement.classList.remove('img-filters--inactive');
   setActiveFilterButton(FilterId.DEFAULT);
   filtersFormElement.addEventListener('click', onFiltersFormClick);
 };
 
-// добавление нового фото после успешной загрузки
-
 const onPhotoUploadSuccess = (evt) => {
   const newPhoto = evt.detail;
-
   if (!newPhoto) {
     return;
   }
 
-  // новое фото в начало списка
   originalPhotos = [newPhoto, ...originalPhotos];
-
-  // перерисовываем галерею с учётом текущего фильтра
   debouncedRenderFilteredPhotos();
 };
 
 document.addEventListener('photo-upload-success', onPhotoUploadSuccess);
 
-// загрузка данных с сервера и старт приложения
-
 getData(
   (photos) => {
     originalPhotos = photos.slice();
-
-    // первый рендер - по умолчанию
     renderPictures(originalPhotos);
-
-    // включаем фильтры
     initFilters();
   },
   (errorMessage) => {
     showAlert(errorMessage);
-  },
+  }
 );

@@ -1,15 +1,10 @@
 import { openBigPicture } from './big-picture.js';
 
 const picturesContainer = document.querySelector('.pictures');
-const pictureTemplate = document
-  .querySelector('#picture')
-  .content
-  .querySelector('.picture');
+const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
 export const renderPictures = (photos) => {
-  picturesContainer
-    .querySelectorAll('.picture')
-    .forEach((element) => element.remove());
+  picturesContainer.querySelectorAll('.picture').forEach((element) => element.remove());
 
   const fragment = document.createDocumentFragment();
 
@@ -20,7 +15,6 @@ export const renderPictures = (photos) => {
     imgElement.src = url;
     imgElement.alt = description;
 
-    // фильтр и масштаб для миниатюры
     imgElement.style.filter = filter || 'none';
 
     if (typeof scale === 'number') {

@@ -73,12 +73,7 @@ const onCommentsLoaderClick = () => {
   renderNextPortion();
 };
 
-function onEscKeydown(evt) {
-  if (isEscapeKey(evt)) {
-    evt.preventDefault();
-    closeBigPicture();
-  }
-}
+let onEscKeydown = null;
 
 const closeBigPicture = () => {
   modal.classList.add('hidden');
@@ -87,8 +82,19 @@ const closeBigPicture = () => {
   document.removeEventListener('keydown', onEscKeydown);
   commentsLoader.removeEventListener('click', onCommentsLoaderClick);
 
+  commentsList.innerHTML = '';
+  commentCountBlock.classList.add('hidden');
+  commentsLoader.classList.add('hidden');
+
   currentComments = [];
   shownCount = 0;
+};
+
+onEscKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closeBigPicture();
+  }
 };
 
 export const openBigPicture = (photo) => {
